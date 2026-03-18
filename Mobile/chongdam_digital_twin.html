@@ -349,10 +349,7 @@
     flex: 1;
     overflow-y: auto;
     padding: 8px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-    align-content: start;
+    display: block;
   }
   .panel-content::-webkit-scrollbar { width: 4px; }
   .panel-content::-webkit-scrollbar-track { background: transparent; }
@@ -371,12 +368,11 @@
     border: 1px solid var(--border);
     border-radius: 6px;
     padding: 8px 8px 8px 11px;
-    margin-bottom: 0;
+    margin-bottom: 6px;
     cursor: pointer;
     transition: border-color .2s, background .2s;
     position: relative;
     overflow: hidden;
-    min-height: 0;
   }
   .sensor-card::before {
     content: '';
@@ -450,9 +446,6 @@
     <!-- 뷰 컨트롤 -->
     <div class="overlay-controls">
       <button class="ctrl-btn active" onclick="setView('perspective')">3D VIEW</button>
-      <button class="ctrl-btn" onclick="setView('top')">TOP</button>
-      <button class="ctrl-btn" onclick="setView('side')">SIDE</button>
-      <button class="ctrl-btn" id="deform-toggle" onclick="toggleDeform()">DEFORM ON</button>
     </div>
 
     <!-- 변형 배율 -->
@@ -1196,8 +1189,13 @@ function animate() {
   requestAnimationFrame(animate);
   t += 0.016;
 
+  // 모델 로드 전에는 카메라 업데이트 스킵
+  if (!modelLoaded) {
+    renderer.render(scene, camera);
+    return;
+  }
+
   // 카메라 궤도
-  // 카메라는 target을 중심으로 공전, pan은 target 위치만 이동
   const tx = panX, ty = panY, tz = panZ;
   camera.position.x = tx + Math.sin(theta) * Math.cos(phi) * radius;
   camera.position.y = ty + Math.sin(phi) * radius;
