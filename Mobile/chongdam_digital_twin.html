@@ -728,6 +728,13 @@ loader.load(
     camera.updateProjectionMatrix();
     console.log(`[카메라] radius=${radius.toFixed(0)}, far=${camera.far.toFixed(0)}, near=${camera.near.toFixed(2)}`);
 
+    // 카메라 초기 각도 — 모델 정면 45도 위에서 내려다보는 뷰로 고정
+    theta = -Math.PI / 6;
+    phi   = Math.PI / 4;
+    panX  = 0;
+    panY  = 0;
+    panZ  = 0;
+
     // 센서 마커 모델 크기에 맞게 스케일 조정
     updateSensorScale(size);
 
