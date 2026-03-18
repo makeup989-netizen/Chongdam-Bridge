@@ -517,6 +517,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
 <script>
 
 // ★ GLB 파일 경로 — 실제 서버 배포 경로로 변경하세요
@@ -667,6 +668,9 @@ let modelLoaded = false;
 let deckMesh = null; // 변형 표현용 (바닥판 대표 메시)
 
 const loader = new THREE.GLTFLoader();
+const dracoLoader = new THREE.DRACOLoader();
+dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/draco/');
+loader.setDRACOLoader(dracoLoader);
 loader.load(
   GLB_PATH,
 
