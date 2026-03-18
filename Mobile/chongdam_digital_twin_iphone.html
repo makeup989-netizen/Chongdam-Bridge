@@ -759,14 +759,14 @@ loader.load(
 
     // 카메라 거리
     const maxDim = Math.max(size.x, size.y, size.z);
-    radius = maxDim * 2.5;
-    camera.far  = maxDim * 100;
+    radius = maxDim * 4.0;
+    camera.far  = maxDim * 200;
     camera.near = maxDim * 0.0001;
     camera.updateProjectionMatrix();
 
-    // 카메라 초기 각도 — 교량 측면(X축 방향)에서 위를 바라봄
-    theta = Math.PI / 2;  // 90도 회전 → 교량 길이 방향이 보임
-    phi   = Math.PI / 6;  // 30도 위에서
+    // 카메라 초기 각도
+    theta = Math.PI / 2;
+    phi   = Math.PI / 4;
     panX  = 0;
     panY  = 0;
     panZ  = 0;
