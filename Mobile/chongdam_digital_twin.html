@@ -200,18 +200,18 @@
     .time-display { font-size: 10px; }
 
     .main {
-      flex-direction: column;  /* 세로 스택 */
+      flex-direction: column;
     }
 
     #canvas-wrap {
       flex: none;
-      height: 55vh;  /* 화면 상단 55% */
+      height: 52vh;
       width: 100%;
     }
 
     .side-panel {
-      width: 100%;
-      height: 45vh;  /* 화면 하단 45% */
+      width: 100% !important;
+      height: 48vh;
       border-left: none;
       border-top: 1px solid var(--border);
       flex-shrink: 0;
@@ -369,46 +369,40 @@
   .sensor-card {
     background: var(--bg);
     border: 1px solid var(--border);
-    border-radius:6px;
-    padding:10px;
-    margin-bottom:6px;
-    cursor:pointer;
+    border-radius: 6px;
+    padding: 8px 8px 8px 11px;
+    margin-bottom: 0;
+    cursor: pointer;
     transition: border-color .2s, background .2s;
-    position:relative;
-    overflow:hidden;
+    position: relative;
+    overflow: hidden;
+    min-height: 0;
   }
   .sensor-card::before {
-    content:'';
-    position:absolute; left:0; top:0; bottom:0; width:3px;
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
     background: var(--card-color, var(--accent));
   }
-  .sensor-card:hover { border-color:var(--card-color, var(--accent)); background:#0A1018; }
-  .sensor-card.selected { border-color:var(--card-color, var(--accent)); background:#0A1018; }
+  .sensor-card:hover { border-color: var(--card-color, var(--accent)); background: #0A1018; }
+  .sensor-card.selected { border-color: var(--card-color, var(--accent)); background: #0A1018; }
 
-  .sc-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; }
-  .sc-id { font-family:var(--mono); font-size:10px; color:var(--text); }
+  .sc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
+  .sc-id { font-family: var(--mono); font-size: 9px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80px; }
   .sc-status {
-    font-family:var(--mono); font-size:9px;
-    padding:2px 7px; border-radius:10px;
-    border:1px solid currentColor;
+    font-family: var(--mono); font-size: 8px;
+    padding: 1px 5px; border-radius: 10px;
+    border: 1px solid currentColor;
+    flex-shrink: 0;
   }
-  .sc-status.safe { color:var(--safe); }
-  .sc-status.warn { color:var(--warn); }
-  .sc-status.danger { color:var(--danger); }
+  .sc-status.safe { color: var(--safe); }
+  .sc-status.warn { color: var(--warn); }
+  .sc-status.danger { color: var(--danger); }
 
-  .sc-val { font-family:var(--mono); font-size:18px; color:#fff; font-weight:500; }
-  .sc-unit { font-family:var(--mono); font-size:10px; color:var(--textMut); margin-left:4px; }
-  .sc-type { font-size:10px; color:var(--textMut); margin-top:2px; }
+  .sc-val { font-family: var(--mono); font-size: 15px; color: #fff; font-weight: 500; }
+  .sc-unit { font-family: var(--mono); font-size: 9px; color: var(--textMut); margin-left: 3px; }
+  .sc-type { font-size: 9px; color: var(--textMut); margin-top: 1px; }
 
-  .mini-chart {
-    height:28px; margin-top:7px;
-    display:flex; align-items:flex-end; gap:2px;
-  }
-  .mini-bar {
-    flex:1; border-radius:2px 2px 0 0;
-    min-height:3px;
-    transition: height .5s ease;
-  }
+  .mini-chart { display: none; }
 
   /* ── 하단 상태바 ── */
   footer {
@@ -630,7 +624,7 @@ const canvas = document.getElementById('three-canvas');
 const wrap   = document.getElementById('canvas-wrap');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
 renderer.setPixelRatio(devicePixelRatio);
-renderer.setClearColor(0xCCCCCC, 1);
+renderer.setClearColor(0x0D1420, 1);
 
 const scene  = new THREE.Scene();
 
@@ -639,9 +633,9 @@ camera.position.set(0, 800, 1500);
 camera.lookAt(0, 0, 0);
 
 // 조명
-const ambient = new THREE.AmbientLight(0x334466, 1.5);
+const ambient = new THREE.AmbientLight(0xffffff, 2.5);
 scene.add(ambient);
-const dirLight = new THREE.DirectionalLight(0x88BBDD, 2.0);
+const dirLight = new THREE.DirectionalLight(0xffffff, 3.0);
 dirLight.position.set(100, 200, 100);
 dirLight.castShadow = true;
 dirLight.shadow.mapSize.set(2048, 2048);
@@ -738,20 +732,19 @@ loader.load(
     panY = 0;
     panZ = 0;
 
-    // 바다 위치 조정 — 모델 하단보다 약간 아래
-    seaMesh.position.y = -size.y / 2 - 2;
+    // 바다 숨김
+    seaMesh.visible = false;
 
     // 카메라 거리 — 가장 긴 축 기준으로 충분히 떨어지게
     const maxDim = Math.max(size.x, size.y, size.z);
-    radius = maxDim * 1.8;
+    radius = maxDim * 1.5;
     camera.far  = maxDim * 50;
     camera.near = maxDim * 0.0005;
     camera.updateProjectionMatrix();
-    console.log(`[카메라] radius=${radius.toFixed(0)}, far=${camera.far.toFixed(0)}, near=${camera.near.toFixed(2)}`);
 
-    // 카메라 초기 각도 — 모델 정면 45도 위에서 내려다보는 뷰로 고정
-    theta = -Math.PI / 6;
-    phi   = Math.PI / 4;
+    // 카메라 초기 각도 — 교량 측면 45도 위에서 내려다보는 뷰
+    theta = Math.PI / 4;
+    phi   = Math.PI / 5;
     panX  = 0;
     panY  = 0;
     panZ  = 0;
