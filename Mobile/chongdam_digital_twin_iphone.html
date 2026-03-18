@@ -627,8 +627,14 @@ const wrap   = document.getElementById('canvas-wrap');
   const fh = footer ? footer.offsetHeight : 28;
   const avail = window.innerHeight - hh - fh;
   const cH = Math.floor(avail * 0.55);
+  wrap.style.width  = window.innerWidth + 'px';
   wrap.style.height = cH + 'px';
   wrap.style.minHeight = cH + 'px';
+  const sidePanel = document.querySelector('.side-panel');
+  if (sidePanel) {
+    sidePanel.style.width  = window.innerWidth + 'px';
+    sidePanel.style.height = (avail - cH) + 'px';
+  }
 })();
 
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -751,16 +757,16 @@ loader.load(
     // 바다 숨김
     seaMesh.visible = false;
 
-    // 카메라 거리 — 가장 긴 축 기준으로 충분히 떨어지게
+    // 카메라 거리
     const maxDim = Math.max(size.x, size.y, size.z);
-    radius = maxDim * 1.5;
+    radius = maxDim * 1.2;
     camera.far  = maxDim * 50;
     camera.near = maxDim * 0.0005;
     camera.updateProjectionMatrix();
 
-    // 카메라 초기 각도 — 교량 측면 45도 위에서 내려다보는 뷰
-    theta = Math.PI / 4;
-    phi   = Math.PI / 5;
+    // 카메라 초기 각도 — 정면 위에서 내려다보기
+    theta = 0;
+    phi   = Math.PI / 3;
     panX  = 0;
     panY  = 0;
     panZ  = 0;
@@ -1276,18 +1282,18 @@ function animate() {
 function setLayout() {
   const header  = document.querySelector('header');
   const footer  = document.querySelector('footer');
-  const tabs    = document.querySelector('.panel-tabs');
-  const isMobile = window.innerWidth <= 768;
-  if (isMobile) {
-    const totalH  = window.innerHeight;
-    const headerH = header  ? header.offsetHeight  : 48;
-    const footerH = footer  ? footer.offsetHeight  : 28;
-    const tabsH   = tabs    ? tabs.offsetHeight    : 36;
-    const canvasH = Math.floor((totalH - headerH - footerH) * 0.55);
-    const panelH  = totalH - headerH - footerH - canvasH;
-    wrap.style.height = canvasH + 'px';
-    const sidePanel = document.querySelector('.side-panel');
-    if (sidePanel) sidePanel.style.height = panelH + 'px';
+  const headerH = header ? header.offsetHeight : 48;
+  const footerH = footer ? footer.offsetHeight : 28;
+  const totalH  = window.innerHeight;
+  const avail   = totalH - headerH - footerH;
+  const canvasH = Math.floor(avail * 0.55);
+  const panelH  = avail - canvasH;
+  wrap.style.width  = window.innerWidth + 'px';
+  wrap.style.height = canvasH + 'px';
+  const sidePanel = document.querySelector('.side-panel');
+  if (sidePanel) {
+    sidePanel.style.width  = window.innerWidth + 'px';
+    sidePanel.style.height = panelH + 'px';
   }
 }
 
