@@ -94,24 +94,27 @@
 
   /* ── 오버레이 컨트롤 ── */
   .overlay-controls {
-    position:absolute; top:14px; left:14px;
-    display:flex; flex-direction:column; gap:6px;
-    z-index:5;
+    position: absolute; top: 10px; left: 10px;
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    z-index: 5;
   }
   .ctrl-btn {
-    background:rgba(13,20,32,.85);
-    border:1px solid var(--border);
-    color:var(--text);
-    font-family:var(--mono);
-    font-size:10px;
-    padding:6px 12px;
-    cursor:pointer;
-    border-radius:4px;
-    letter-spacing:.05em;
+    background: rgba(13,20,32,.85);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 5px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    letter-spacing: .04em;
     transition: border-color .2s, color .2s;
-    backdrop-filter:blur(6px);
+    backdrop-filter: blur(6px);
+    white-space: nowrap;
   }
-  .ctrl-btn:hover, .ctrl-btn.active { border-color:var(--accent); color:var(--accent); }
+  .ctrl-btn:hover, .ctrl-btn.active { border-color: var(--accent); color: var(--accent); }
 
   /* ── 로딩 오버레이 ── */
   #loading-overlay {
@@ -342,16 +345,25 @@
   }
   .tab.active { color:var(--accent); border-bottom-color:var(--accent); }
 
-  .panel-content { flex:1; overflow-y:auto; padding:12px; }
-  .panel-content::-webkit-scrollbar { width:4px; }
-  .panel-content::-webkit-scrollbar-track { background:transparent; }
-  .panel-content::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  .panel-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    align-content: start;
+  }
+  .panel-content::-webkit-scrollbar { width: 4px; }
+  .panel-content::-webkit-scrollbar-track { background: transparent; }
+  .panel-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
   /* ── 센서 카드 ── */
   .sensor-section-title {
-    font-family:var(--mono); font-size:9px; letter-spacing:.12em;
-    color:var(--textMut); margin: 10px 0 6px;
-    text-transform:uppercase;
+    font-family: var(--mono); font-size: 9px; letter-spacing: .12em;
+    color: var(--textMut); margin: 6px 0 4px;
+    text-transform: uppercase;
+    grid-column: 1 / -1;
   }
 
   .sensor-card {
