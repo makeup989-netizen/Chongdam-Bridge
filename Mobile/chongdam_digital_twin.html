@@ -211,7 +211,8 @@
 
     .side-panel {
       width: 100% !important;
-      height: 48vh;
+      flex: 1;
+      min-height: 0;
       border-left: none;
       border-top: 1px solid var(--border);
       flex-shrink: 0;
@@ -1248,9 +1249,28 @@ function animate() {
 }
 
 // ── 초기화 ───────────────────────────────────────────────────────────────
+function setLayout() {
+  const header  = document.querySelector('header');
+  const footer  = document.querySelector('footer');
+  const tabs    = document.querySelector('.panel-tabs');
+  const isMobile = window.innerWidth <= 768;
+  if (isMobile) {
+    const totalH  = window.innerHeight;
+    const headerH = header  ? header.offsetHeight  : 48;
+    const footerH = footer  ? footer.offsetHeight  : 28;
+    const tabsH   = tabs    ? tabs.offsetHeight    : 36;
+    const canvasH = Math.floor((totalH - headerH - footerH) * 0.55);
+    const panelH  = totalH - headerH - footerH - canvasH;
+    wrap.style.height = canvasH + 'px';
+    const sidePanel = document.querySelector('.side-panel');
+    if (sidePanel) sidePanel.style.height = panelH + 'px';
+  }
+}
+
 function initRendererSize() {
+  setLayout();
   const W = wrap.clientWidth  || window.innerWidth;
-  const H = wrap.clientHeight || window.innerHeight * 0.52;
+  const H = wrap.clientHeight || Math.floor(window.innerHeight * 0.52);
   renderer.setSize(W, H, false);
   camera.aspect = W / H;
   camera.updateProjectionMatrix();
@@ -1259,16 +1279,12 @@ initRendererSize();
 renderPanel();
 animate();
 
-// 화면 크기 변경 대응 (모바일 회전 포함)
-const resizeObserver = new ResizeObserver(() => {
-  initRendererSize();
-});
-resizeObserver.observe(wrap);
+window.addEventListener('resize', initRendererSize);
+window.addEventListener('orientationchange', () => setTimeout(initRendererSize, 200));
+window.addEventListener('load', () => setTimeout(initRendererSize, 300));
 
-// 모바일에서 레이아웃 완료 후 재조정
-window.addEventListener('load', () => {
-  setTimeout(initRendererSize, 300);
-});
+const resizeObserver = new ResizeObserver(initRendererSize);
+resizeObserver.observe(wrap);
 
 // ── PWA 서비스워커 등록 ──────────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
