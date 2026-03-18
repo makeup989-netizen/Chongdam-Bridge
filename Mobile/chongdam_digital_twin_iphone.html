@@ -442,6 +442,7 @@
       <div>모델 로딩 중...</div>
       <div class="load-bar-wrap"><div id="loading-bar"></div></div>
       <div id="load-progress">0%</div>
+      <div id="debug-info" style="color:#5A7A99;font-size:9px;margin-top:8px;line-height:1.6"></div>
     </div>
 
     <!-- 뷰 컨트롤 -->
@@ -617,6 +618,19 @@ function genData(sensor) {
 // ── Three.js 초기화 ──────────────────────────────────────────────────────
 const canvas = document.getElementById('three-canvas');
 const wrap   = document.getElementById('canvas-wrap');
+
+// 모바일에서 canvas 크기를 JS로 강제 설정 (vh 단위 오류 방지)
+(function forceCanvasSize() {
+  const header = document.querySelector('header');
+  const footer = document.querySelector('footer');
+  const hh = header ? header.offsetHeight : 48;
+  const fh = footer ? footer.offsetHeight : 28;
+  const avail = window.innerHeight - hh - fh;
+  const cH = Math.floor(avail * 0.55);
+  wrap.style.height = cH + 'px';
+  wrap.style.minHeight = cH + 'px';
+})();
+
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 const renderer = new THREE.WebGLRenderer({
   canvas,
@@ -626,7 +640,6 @@ const renderer = new THREE.WebGLRenderer({
   alpha: false,
 });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setPixelRatio(devicePixelRatio);
 renderer.setClearColor(0x0D1420, 1);
 
 const scene  = new THREE.Scene();
@@ -778,7 +791,9 @@ loader.load(
     document.getElementById('loading-overlay').innerHTML = `
       <div style="color:#E84040;margin-bottom:8px">모델 로드 실패</div>
       <div style="color:#5A7A99;font-size:10px">${error.message || String(error)}</div>
-      <div style="color:#5A7A99;font-size:10px;margin-top:6px">경로 확인: ${GLB_PATH}</div>
+      <div style="color:#5A7A99;font-size:10px;margin-top:6px">경로: ${GLB_PATH}</div>
+      <div style="color:#5A7A99;font-size:10px;margin-top:4px">캔버스: ${canvas.width}×${canvas.height}</div>
+      <div style="color:#5A7A99;font-size:10px;margin-top:4px">화면: ${window.innerWidth}×${window.innerHeight}</div>
     `;
   }
 );
@@ -1283,6 +1298,8 @@ function initRendererSize() {
   renderer.setSize(W, H, false);
   camera.aspect = W / H;
   camera.updateProjectionMatrix();
+  const dbg = document.getElementById('debug-info');
+  if (dbg) dbg.innerHTML = `wrap: ${W}×${H}<br>screen: ${window.innerWidth}×${window.innerHeight}<br>dpr: ${window.devicePixelRatio}`;
 }
 initRendererSize();
 renderPanel();
