@@ -230,33 +230,15 @@
     /* 스케일 표시 숨김 */
     .scale-display { display: none; }
 
-    /* 그래프 팝업 — 전체 너비 */
-    #graph-popup {
-      width: calc(100vw - 28px);
-      left: 14px;
-      right: 14px;
-      top: 10px;
-      max-height: 50vh;
-      overflow-y: auto;
-    }
-
-    /* 센서 카드 터치 영역 확보 */
-    .sensor-card { padding: 12px 10px; margin-bottom: 8px; }
-    .sc-val { font-size: 20px; }
-    .sc-id { font-size: 11px; }
-
     /* 기간 탭 버튼 */
     .period-btn { padding: 6px 0; font-size: 11px; }
 
     /* footer 간소화 */
     footer { font-size: 10px; padding: 0 10px; }
-    footer > div:last-child { display: none; } /* 조작 안내 텍스트 숨김 */
+    footer > div:last-child { display: none; }
 
     /* 탭 */
     .tab { font-size: 11px; padding: 12px 0; }
-
-    /* 패널 컨텐츠 스크롤 */
-    .panel-content { padding: 8px; }
   }
 
   @media (max-width: 400px) {
@@ -264,50 +246,76 @@
     .side-panel  { height: 50vh; }
     .logo-text   { font-size: 9px; }
   }
+  /* ── 바텀 시트 팝업 ── */
   #graph-popup {
-    position:absolute;
-    top:50%; left:50%;
-    transform:translate(-50%,-50%);
-    width:480px;
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:10px;
-    padding:20px;
-    z-index:20;
-    display:none;
-    box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--panel);
+    border-radius: 16px 16px 0 0;
+    border-top: 1px solid var(--border);
+    padding: 0 16px 24px;
+    z-index: 20;
+    display: none;
+    box-shadow: 0 -8px 40px rgba(0,0,0,.5);
+    transform: translateY(100%);
+    transition: transform .3s ease;
+    max-height: 70vh;
+    overflow-y: auto;
   }
-  #graph-popup.show { display:block; }
-  .popup-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
-  .popup-title { font-family:var(--mono); font-size:13px; color:var(--accent); }
+  #graph-popup.show { display: block; transform: translateY(0); }
+  .popup-handle {
+    width: 36px; height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 12px auto 14px;
+  }
+  .popup-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+  .popup-title { font-family:var(--mono); font-size:12px; color:var(--accent); }
   .popup-close {
     background:none; border:1px solid var(--border);
     color:var(--textMut); cursor:pointer;
     width:24px; height:24px; border-radius:4px;
     font-size:14px; display:flex; align-items:center; justify-content:center;
-    transition: border-color .2s, color .2s;
   }
-  .popup-close:hover { border-color:var(--danger); color:var(--danger); }
 
   .period-btn {
-    flex:1; padding:4px 0; background:var(--border); border:1px solid var(--border);
+    flex:1; padding:5px 0; background:var(--border); border:none;
     color:var(--textMut); font-family:var(--mono); font-size:10px; cursor:pointer;
     border-radius:3px; transition:all .15s;
   }
-  .period-btn.active { background:var(--accent); border-color:var(--accent); color:#000; font-weight:500; }
-  .period-btn:hover:not(.active) { border-color:var(--accent); color:var(--accent); }
-  #graph-canvas { width:100%; height:180px; }
+  .period-btn.active { background:var(--accent); color:#000; font-weight:500; }
+  #graph-canvas { width:100%; height:150px; }
 
   .popup-stats {
     display:grid; grid-template-columns:repeat(3,1fr);
-    gap:8px; margin-top:14px;
+    gap:8px; margin-top:12px;
   }
   .stat-box {
     background:var(--bg); border:1px solid var(--border);
     border-radius:6px; padding:8px 10px;
   }
   .stat-label { font-family:var(--mono); font-size:9px; color:var(--textMut); margin-bottom:4px; }
-  .stat-val { font-family:var(--mono); font-size:14px; color:#fff; font-weight:500; }
+  .stat-val { font-family:var(--mono); font-size:13px; color:#fff; font-weight:500; }
+
+  /* ── 센서 카드 2열 그리드 ── */
+  @media (max-width: 768px) {
+    .panel-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      padding: 8px;
+      align-content: start;
+    }
+    .sensor-section-title {
+      grid-column: 1 / -1;
+    }
+    .sensor-card {
+      padding: 8px 10px;
+      margin-bottom: 0;
+    }
+    .sc-val { font-size: 16px; }
+    .sc-id { font-size: 9px; }
+  }
 
   /* ── 오른쪽 패널 ── */
   .side-panel {
@@ -462,6 +470,7 @@
 
     <!-- 그래프 팝업 -->
     <div id="graph-popup">
+      <div class="popup-handle"></div>
       <div class="popup-header">
         <div class="popup-title" id="popup-title">--</div>
         <button class="popup-close" onclick="closePopup()">✕</button>
@@ -890,7 +899,7 @@ canvas.addEventListener('touchmove', e => {
   touchMoved = true;
 
   if (t.length === 1 && touchPrev) {
-    // 한 손가락 → 회전
+    // 한 손가락 → 회전만
     const dx = (t[0].clientX - touchPrev.x) * 0.005;
     const dy = (t[0].clientY - touchPrev.y) * 0.005;
     theta -= dx;
@@ -899,28 +908,13 @@ canvas.addEventListener('touchmove', e => {
 
   } else if (t.length === 2) {
     const dist = getTouchDist(t);
-    const mid  = getTouchMid(t);
-
     if (pinchPrevDist !== null) {
-      // 핀치 줌
+      // 두 손가락 → 줌만 (패닝 없음, 모델 중심 고정)
       const scale = pinchPrevDist / dist;
       radius = Math.max(10, Math.min(5000, radius * scale));
     }
-
-    if (pinchPrevMid !== null) {
-      // 두 손가락 드래그 → 패닝
-      const dx = (mid.x - pinchPrevMid.x) * 0.003;
-      const dy = (mid.y - pinchPrevMid.y) * 0.003;
-      const panSpeed = radius * 0.5;
-      const rightX =  Math.cos(theta);
-      const rightZ = -Math.sin(theta);
-      panX -= dx * panSpeed * rightX;
-      panZ -= dx * panSpeed * rightZ;
-      panY += dy * panSpeed;
-    }
-
     pinchPrevDist = dist;
-    pinchPrevMid  = mid;
+    pinchPrevMid  = getTouchMid(t);
   }
 }, { passive: false });
 
