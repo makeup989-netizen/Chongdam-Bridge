@@ -1236,7 +1236,8 @@ function animate() {
   });
 
   // 리사이즈 대응
-  const W = wrap.clientWidth, H = wrap.clientHeight;
+  const W = wrap.clientWidth  || window.innerWidth;
+  const H = wrap.clientHeight || window.innerHeight * 0.52;
   if (renderer.domElement.width !== W || renderer.domElement.height !== H) {
     renderer.setSize(W, H, false);
     camera.aspect = W / H;
@@ -1247,19 +1248,27 @@ function animate() {
 }
 
 // ── 초기화 ───────────────────────────────────────────────────────────────
-renderer.setSize(wrap.clientWidth, wrap.clientHeight, false);
-camera.aspect = wrap.clientWidth / wrap.clientHeight;
-camera.updateProjectionMatrix();
+function initRendererSize() {
+  const W = wrap.clientWidth  || window.innerWidth;
+  const H = wrap.clientHeight || window.innerHeight * 0.52;
+  renderer.setSize(W, H, false);
+  camera.aspect = W / H;
+  camera.updateProjectionMatrix();
+}
+initRendererSize();
 renderPanel();
 animate();
 
 // 화면 크기 변경 대응 (모바일 회전 포함)
 const resizeObserver = new ResizeObserver(() => {
-  renderer.setSize(wrap.clientWidth, wrap.clientHeight, false);
-  camera.aspect = wrap.clientWidth / wrap.clientHeight;
-  camera.updateProjectionMatrix();
+  initRendererSize();
 });
 resizeObserver.observe(wrap);
+
+// 모바일에서 레이아웃 완료 후 재조정
+window.addEventListener('load', () => {
+  setTimeout(initRendererSize, 300);
+});
 
 // ── PWA 서비스워커 등록 ──────────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
