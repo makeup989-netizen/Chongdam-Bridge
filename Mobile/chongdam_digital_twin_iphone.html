@@ -757,16 +757,17 @@ loader.load(
     // 바다 숨김
     seaMesh.visible = false;
 
-    // 카메라 거리
+    // 카메라 거리 - PC 실측값 기준
     const maxDim = Math.max(size.x, size.y, size.z);
-    radius = maxDim * 4.0;
+    radius = maxDim * 5.0;
+    camera.fov  = 60;   // 모바일은 시야각 넓게
     camera.far  = maxDim * 200;
     camera.near = maxDim * 0.0001;
     camera.updateProjectionMatrix();
 
-    // 카메라 초기 각도
-    theta = Math.PI / 2;
-    phi   = Math.PI / 4;
+    // PC 콘솔 실측값 그대로 사용
+    theta = Math.PI / 2;        // 1.5707...
+    phi   = Math.PI / 4;        // 0.7853...
     panX  = 0;
     panY  = 0;
     panZ  = 0;
