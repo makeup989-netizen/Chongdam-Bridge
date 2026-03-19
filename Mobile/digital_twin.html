@@ -450,7 +450,7 @@ loader.load(GLB_URL,
     // setViewOffset으로 화면상 위치 조정 (회전 기준은 0,0,0 그대로)
     // offsetX 양수 → 모델 왼쪽, offsetY 양수 → 모델 위쪽
     const W = wrap.clientWidth, H = wrap.clientHeight;
-    camera.setViewOffset(W, H, W * 0.3, H * 0.15, W, H);
+    camera.setViewOffset(W, H, W * 0.1, H * 0.15, W, H);
     camera.updateProjectionMatrix();
 
     updateSensorScale(size);
