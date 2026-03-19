@@ -273,6 +273,27 @@
 
 const GLB_URL = './output/chongdam_bridge_compressed.glb?v=1';
 
+// 상태평가 등급별 색상
+const GRADE_COLORS = {
+  'a': 0x2196F3,  // 파란색
+  'b': 0x4CAF50,  // 초록색
+  'c': 0xFFEB3B,  // 노란색
+  'd': 0xFF9800,  // 주황색
+  'e': 0xF44336,  // 빨간색
+};
+
+let memberGrades = {};
+async function loadMemberGrades() {
+  try {
+    const res = await fetch('./output/member_grades.json');
+    memberGrades = await res.json();
+    console.log(`[OK] member_grades.json 로드 완료: ${Object.keys(memberGrades).length}개 부재`);
+  } catch(e) {
+    console.warn('[WARN] member_grades.json 로드 실패', e);
+  }
+}
+loadMemberGrades();
+
 // ── 센서 정의 ─────────────────────────────────────────────────────────────
 const SENSORS = [
   { id:'EM_P39P40_01',  type:'신축변위계', unit:'mm',  color:'#FF8250', pos:[8,    9,  -21.5], axis:'x',  range:[-5,5],    noLimit:true },
@@ -390,6 +411,16 @@ loader.load(GLB_URL,
       if (!child.isMesh) return;
       child.castShadow = true;
       child.receiveShadow = true;
+
+      // 등급 색상 적용 (mesh 이름 = GlobalId)
+      const grade = memberGrades[child.name];
+      if (grade && GRADE_COLORS[grade]) {
+        child.material = new THREE.MeshStandardMaterial({
+          color: GRADE_COLORS[grade],
+          roughness: 0.6,
+          metalness: 0.1,
+        });
+      }
     });
 
     const box    = new THREE.Box3().setFromObject(model);
